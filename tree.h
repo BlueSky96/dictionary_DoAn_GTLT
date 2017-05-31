@@ -26,6 +26,7 @@ class AVLTree {
 		//cac phuong thuc kiem tra tu
 		bool isLetter(char c);
 		bool isExist(string word);
+		void toLower(string& word);
 		
 		void saveWord(Node* node, fstream& f);
 	public:
@@ -40,7 +41,7 @@ class AVLTree {
 			return size;
 		}
 		void insert(string word, string meaning);
-		void search(string word) const;
+		void search(string word);
 		void del(string word);
 		void show() const;
 		void showWord(Node* node) const;

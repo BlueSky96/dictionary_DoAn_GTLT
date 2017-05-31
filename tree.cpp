@@ -64,10 +64,12 @@ int AVLTree::getBalanceFactor(Node* node) {
 }
 
 void AVLTree::insert(string word, string meaning) {
-	//transform(word.begin(), word.end(), word.begin(), ::tolower);
-	this->root = insertWord(this->root, word, meaning);
-	this->size++;
-	//cout << "Word inserted!" << endl;
+	transform(word.begin(), word.end(), word.begin(), ::tolower);
+	if(!isExist(word)){
+		this->root = insertWord(this->root, word, meaning);
+		cout << "Da them: '" << word << "'-->''" << meaning << "''" << endl; 
+		this->size++;
+	}
 }
 
 Node* AVLTree::insertWord(Node* node, string word, string meaning) {
@@ -86,12 +88,8 @@ Node* AVLTree::insertWord(Node* node, string word, string meaning) {
 	else return node;
 	
 	// 2. Update height
-	//cout << "Step 2" << endl;
-	
 	node->height = 1 + max(node->left->getHeight(), node->right->getHeight());
-	//cout << node->height << endl;
 	// 3. Check unbalanced or not
-	//cout << "Step 3" << endl;
 	int balanceFactor = getBalanceFactor(node);
 	
 	// If unbalanced then make it balance
@@ -99,23 +97,19 @@ Node* AVLTree::insertWord(Node* node, string word, string meaning) {
 	
 	//Left left case
 	if (balanceFactor > 1 && word < node->left->word) {
-		//cout << "Left left case" << endl;
 		return rightRotate(node);
 	}
 	// Right right case
 	if (balanceFactor < -1 && word > node->right->word) {
-		//cout << "Right right case" << endl;
 		return leftRotate(node);
 	}
 	//Left right case
 	if (balanceFactor > 1 && word > node->left->word) {
-		//cout << "Left right case" << endl;
 		node->left = leftRotate(node->left);
 		return rightRotate(node);
 	}
 	//Right left case
 	if (balanceFactor < - 1 && word < node->right->word) {
-		//cout << "Right left case" << endl;
 		node->right = rightRotate(node->right);
 		return leftRotate(node);
 	}
@@ -136,11 +130,11 @@ void AVLTree::preOrderShow(Node* r) const {
 		preOrderShow(r->right);
 	}
 }
-void AVLTree::search(string word) const {
-	transform(word.begin(), word.end(), word.begin(), ::tolower);
+void AVLTree::search(string word){
+	toLower(word);
 	Node* result = searchWord(this->root, word);
 	if (result == NULL)
-		cout << "Not found!";
+		cout << "Khong tim thay tu!";
 	else 
 		cout << result->word << "-->" << result->meaning;
 	cout << endl;
@@ -167,17 +161,16 @@ Node* AVLTree::minValueNode(Node* node) {
 }
 void AVLTree::del(string word) {
 	//cout << "Del function" << endl;
-	transform(word.begin(), word.end(), word.begin(), ::tolower);
+	toLower(word);
 	if (searchWord(this->root, word)) {
 		this->root = deleteWord(this->root, word);
 		this->size--;
-		cout << "Word deleted!" << endl;
+		cout << "Da xoa tu!" << endl;
 	}
 	else
-		cout << "Can't find this word!";
+		cout << "Khong tim thay tu!";
 }
 Node* AVLTree::deleteWord(Node* node, string word) {
-	//cout << "deleteWord function" << endl;
 	// 1. Perform the normal BST delete
 	if (node == NULL) {
 		return node;
@@ -221,34 +214,27 @@ Node* AVLTree::deleteWord(Node* node, string word) {
         return node;
     }
     // 2. Update height
-	//cout << "Step 2" << endl;
 	node->height = 1 + max(node->left->getHeight(), node->right->getHeight());
-	//cout << node->height << endl;
 	// 3. Check unbalanced or not
-	//cout << "Step 3" << endl;
 	int balanceFactor = getBalanceFactor(node);
 	// If unbalanced then make it balance
 	// There are 4 cases
 	
 	//Left left case
 	if (balanceFactor > 1 && getBalanceFactor(node->left) >= 0) {
-		//cout << "Left left case" << endl;
 		return rightRotate(node);
 	}
 	// Right right case
 	if (balanceFactor < -1 && getBalanceFactor(node->right) <= 0) {
-		//cout << "Right right case" << endl;
 		return leftRotate(node);
 	}
 	//Left right case
 	if (balanceFactor > 1 && getBalanceFactor(node->left) < 0) {
-		//cout << "Left right case" << endl;
 		node->left = leftRotate(node->left);
 		return rightRotate(node);
 	}
 	//Right left case
 	if (balanceFactor < - 1 && getBalanceFactor(node->right) > 0) {
-		//cout << "Right left case" << endl;
 		node->right = rightRotate(node->right);
 		return leftRotate(node);
 	}
@@ -272,7 +258,6 @@ void AVLTree::saveDictData(char* path){
 	f.close();
 }
 void AVLTree::loadDictData(char* path){
-	//this->~AVLTree();
 	
 	string word, mean;
 	fstream f;
@@ -280,7 +265,8 @@ void AVLTree::loadDictData(char* path){
 	
 	int numOfWord = 0;
 	f >> numOfWord;
-	f.seekg(3);
+	string tmp;
+	getline(f, tmp);
 	 
 	while(!f.eof()){
 		getline(f, word);
@@ -289,7 +275,7 @@ void AVLTree::loadDictData(char* path){
 		if(--numOfWord  == 0)	break;
 	}
 	if(numOfWord != 0){
-		cout << "Loi doc file: Khong du so luong tu!" << endl;
+		cout << "Loi doc file: khong du so luong tu!" << endl;
 		exit(1);
 	}
 	f.close();	
@@ -329,7 +315,10 @@ bool AVLTree::isLetter(char c){
 }
 
 bool AVLTree::isExist(string word){
-	transform(word.begin(), word.end(), word.begin(), ::tolower);
+	toLower(word);
 	Node* foo = searchWord(this->root, word);
 	return (foo != NULL);
+}
+void AVLTree::toLower(string& word){
+	transform(word.begin(), word.end(), word.begin(), ::tolower);
 }
