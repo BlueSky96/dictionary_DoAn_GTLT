@@ -288,6 +288,10 @@ void AVLTree::loadDictData(char* path){
 		insert(word, mean);
 		if(--numOfWord  == 0)	break;
 	}
+	if(numOfWord != 0){
+		cout << "Loi doc file: Khong du so luong tu!" << endl;
+		exit(1);
+	}
 	f.close();	
 }
 void AVLTree::checkDocumentByDict(char* path){
@@ -297,12 +301,13 @@ void AVLTree::checkDocumentByDict(char* path){
 	char c;
 	while(!f.eof()){
 		word.clear();
+		c = f.get();
 		while(isLetter(c)){
 			word += c;
 			c = f.get();			
 		}
-		if(!word.empty()){
-			if(isExist(word)){
+		if(word != ""){
+			if(!isExist(word)){
 				cout << word << " ";
 			}
 		}
@@ -322,6 +327,7 @@ void AVLTree::viewDocument(char* path){
 bool AVLTree::isLetter(char c){
 	return ((c>='a' && c<='z') || (c>='A' && c<='Z'));
 }
+
 bool AVLTree::isExist(string word){
 	transform(word.begin(), word.end(), word.begin(), ::tolower);
 	Node* foo = searchWord(this->root, word);
